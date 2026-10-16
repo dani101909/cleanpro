@@ -1,0 +1,23 @@
+sequenceDiagram
+actor Administracion
+participant CAS as CierreAppService
+participant UoW as UnitOfWork
+participant SR as ServicioRepository
+participant S as Servicio
+participant FP as FacturacionPort
+
+Administracion->>CAS: cerrarParaFacturacion(folio, adminId)
+CAS->>SR: obtenerPorFolio(folio)
+SR-->>CAS: Servicio (Terminado)
+CAS->>S: cerrarParaFacturacion(actor)
+alt Hay incidencias o extras pendientes (BR-07)
+  S-->>CAS: CierreBloqueado(detalle)
+  CAS->>UoW: rollback()
+  CAS-->>Administracion: CIERRE_BLOQUEADO + detalle de lo que falta
+else Todo documentado
+  S-->>CAS: CerradoParaFacturacion
+  CAS->>SR: guardar(servicio)
+  CAS->>UoW: commit()
+  CAS->>FP: publicar(ServicioCerradoParaFacturacion)
+  CAS-->>Administracion: CerradoParaFacturacion
+end

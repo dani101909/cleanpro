@@ -1,0 +1,143 @@
+classDiagram
+direction TB
+
+%% ===== APLICACION =====
+class CotizacionesAppService {
+  <<Aplicacion>>
+  +aceptarCotizacion()
+}
+class ProgramacionAppService {
+  <<Aplicacion>>
+  +confirmarCuadrilla()
+}
+class PersonalAppService {
+  <<Aplicacion>>
+  +reportarAusencia()
+  +reasignarPersonal()
+}
+class EjecucionAppService {
+  <<Aplicacion>>
+  +registrarExtra()
+}
+class CierreAppService {
+  <<Aplicacion>>
+  +cerrarParaFacturacion()
+}
+class UnitOfWork {
+  <<interface Aplicacion>>
+  +commit()
+  +rollback()
+}
+class NotificacionPort {
+  <<interface Aplicacion>>
+}
+class FacturacionPort {
+  <<interface Aplicacion>>
+}
+
+%% ===== DOMINIO =====
+class Servicio {
+  <<Aggregate Root>>
+  +confirmarCuadrilla()
+  +reportarAusencia()
+  +reasignarPersonal()
+  +registrarExtra()
+  +cerrarParaFacturacion()
+}
+class Cotizacion {
+  <<Aggregate Root>>
+  +aceptar()
+}
+class Incidencia {
+  <<Entity>>
+}
+class Extra {
+  <<Entity>>
+}
+class AsignacionDePersonal {
+  <<Value Object>>
+}
+class Cuadrilla {
+  <<Aggregate Root>>
+}
+class Empleado {
+  <<Aggregate Root>>
+}
+class ConfiguracionDePoliticas {
+  <<Aggregate Root>>
+}
+class AsignadorDeCuadrilla {
+  <<Domain Service>>
+  +estaLibre()
+}
+class PoliticaDeExtras {
+  <<Domain Service>>
+  +requiereConfirmacion()
+}
+class ServicioRepository {
+  <<interface Repository>>
+  +guardar()
+  +obtenerPorFolio()
+  +obtenerConfirmadosPorFecha()
+}
+class CotizacionRepository {
+  <<interface Repository>>
+}
+class CuadrillaRepository {
+  <<interface Repository>>
+}
+class EmpleadoRepository {
+  <<interface Repository>>
+}
+class ConfiguracionRepository {
+  <<interface Repository>>
+}
+
+%% ===== INFRAESTRUCTURA =====
+class RepositoriosSql {
+  <<Infraestructura>>
+}
+class SqlUnitOfWork {
+  <<Infraestructura>>
+}
+class NotificacionAdapter {
+  <<Infraestructura>>
+}
+class FacturacionEventAdapter {
+  <<Infraestructura>>
+}
+
+%% ===== Relaciones: aplicacion =====
+CotizacionesAppService ..> CotizacionRepository
+CotizacionesAppService ..> ServicioRepository
+ProgramacionAppService ..> ServicioRepository
+ProgramacionAppService ..> CuadrillaRepository
+ProgramacionAppService ..> UnitOfWork
+ProgramacionAppService ..> AsignadorDeCuadrilla
+PersonalAppService ..> EmpleadoRepository
+PersonalAppService ..> NotificacionPort
+EjecucionAppService ..> PoliticaDeExtras
+EjecucionAppService ..> ConfiguracionRepository
+CierreAppService ..> ServicioRepository
+CierreAppService ..> FacturacionPort
+CierreAppService ..> UnitOfWork
+
+%% ===== Relaciones: dominio =====
+Servicio *-- Incidencia
+Servicio *-- Extra
+Servicio *-- AsignacionDePersonal
+Servicio ..> Cotizacion : mismo Folio
+Servicio ..> Cuadrilla : CuadrillaId
+Cuadrilla o-- Empleado
+AsignadorDeCuadrilla ..> ServicioRepository
+PoliticaDeExtras ..> ConfiguracionDePoliticas
+
+%% ===== Relaciones: infraestructura =====
+RepositoriosSql ..|> ServicioRepository
+RepositoriosSql ..|> CotizacionRepository
+RepositoriosSql ..|> CuadrillaRepository
+RepositoriosSql ..|> EmpleadoRepository
+RepositoriosSql ..|> ConfiguracionRepository
+SqlUnitOfWork ..|> UnitOfWork
+NotificacionAdapter ..|> NotificacionPort
+FacturacionEventAdapter ..|> FacturacionPort

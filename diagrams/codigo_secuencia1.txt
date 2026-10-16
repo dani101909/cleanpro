@@ -1,0 +1,23 @@
+sequenceDiagram
+actor Coordinador
+participant PAS as ProgramacionAppService
+participant UoW as UnitOfWork
+participant SR as ServicioRepository
+participant CR as CuadrillaRepository
+participant ADC as AsignadorDeCuadrilla
+participant S as Servicio
+
+Coordinador->>PAS: confirmarCuadrilla(folio, cuadrillaId, coordinadorId)
+PAS->>SR: obtenerPorFolio(folio)
+SR-->>PAS: Servicio (Programado)
+PAS->>CR: obtenerPorId(cuadrillaId)
+CR-->>PAS: Cuadrilla
+PAS->>ADC: estaLibre(cuadrilla, fecha)
+ADC->>SR: obtenerConfirmadosPorFecha(fecha)
+SR-->>ADC: servicios confirmados
+ADC-->>PAS: disponible
+PAS->>S: confirmarCuadrilla(cuadrillaId, disponible)
+S-->>PAS: CuadrillaConfirmada
+PAS->>SR: guardar(servicio)
+PAS->>UoW: commit()
+PAS-->>Coordinador: CuadrillaConfirmada
