@@ -7,7 +7,7 @@ from .unit_of_work import UnitOfWork
 
 
 class CotizacionesAppService:
-    """CU-01. Unica operacion con dos Aggregates (excepcion documentada, HC-10)."""
+    """CU-01. Unica operacion con dos Aggregates (excepcion documentada en ADR-002)."""
 
     def __init__(self, cotizaciones: CotizacionRepository,
                  servicios: ServicioRepository, uow: UnitOfWork):

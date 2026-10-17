@@ -1,8 +1,9 @@
 """Implementaciones en memoria de los Repository y la Unit of Work.
 
-Sustituyen a RepositoriosSql / SqlUnitOfWork del diagrama de clases mientras
-no haya base de datos; cumplen exactamente las mismas interfaces (LSP), asi
-que una version SQL puede reemplazarlas sin tocar dominio ni aplicacion.
+Corresponden a las clases *EnMemoria del diagrama de clases: una por Repository
+mas UnitOfWorkEnMemoria. Cumplen las mismas interfaces (LSP) y se verifican con
+tests/test_contrato_repositorios.py, asi que una version SQL puede reemplazarlas
+sin tocar dominio ni aplicacion si pasa esa misma bateria.
 
 Los repositorios entregan y guardan COPIAS: un cambio en un Aggregate solo
 persiste cuando el servicio de aplicacion llama a guardar() y luego commit().
